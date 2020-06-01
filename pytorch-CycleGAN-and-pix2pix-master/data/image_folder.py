@@ -35,7 +35,7 @@ def make_dataset(dir, max_dataset_size=float("inf")):
     return images[:min(max_dataset_size, len(images))]
 
 #instead of getting path to images, we will get path to folders images are in
-def mod_make_dataset(dir, max_dataset_size:
+def mod_make_dataset(dir, max_dataset_size):
     image_folders = []
     assert os.path.isdir(dir), '%s is not a valid directory' %dir
 
