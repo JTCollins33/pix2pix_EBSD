@@ -35,12 +35,12 @@ def make_dataset(dir, max_dataset_size=float("inf")):
     return images[:min(max_dataset_size, len(images))]
 
 #instead of getting path to images, we will get path to folders images are in
-def mod_make_dataset(dir, max_dataset_size=float("inf")):
+def mod_make_dataset(dir, max_dataset_size:
     image_folders = []
     assert os.path.isdir(dir), '%s is not a valid directory' %dir
 
     #only get folders housing 36 images, not the actual images
-    for i in range(1, nFolders+1):
+    for i in range(1, max_dataset_size+1):
         cDir = dir+"/ipf_image_"+str(i)
         if (os.path.isdir(cDir)):
             image_folders.append(cDir)
