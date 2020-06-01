@@ -59,10 +59,16 @@ class AlignedDataset(BaseDataset):
         #read image given a random integer index
         A_path = self.A_paths[index]
         B_path = self.B_paths[index]
-        if (A_path[-2]=='_'):
-            real_index = int(A_path[-1])
-        else:
-            real_index = int(A_path[-2:])
+        found = False
+        index_string = ''
+        i = -1
+        while (not found):
+          if (A_path[i] == '_'):
+            found = True
+          else:
+            index_string = A_path[i]+index_string
+          i = i-1
+        real_index = int(index_string)
 
 
         B2 = cv2.imread(B_path)
