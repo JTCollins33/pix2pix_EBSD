@@ -5,12 +5,32 @@ import ntpath
 import time
 from . import util, html
 from subprocess import Popen, PIPE
+from PIL import Image
 
 
 if sys.version_info[0] == 2:
     VisdomExceptionBase = Exception
 else:
     VisdomExceptionBase = ConnectionError
+
+
+
+def findDiffImage(fake_im, real_im, im_dir, im_name):
+    #compute image that is difference between real and fake image
+    diff_im = np.zeros((256, 256, 3), dtype = np.uint8)
+    for i in range(0, fake_im.shape[0]):
+        for j in range(0, fake_im.shape[1]):
+            for h in range(0, fake_im.shape[2]):
+                diff_im[i][j][h] = abs(fake_im[i][j][h]-real_im[i][j][h])
+
+    #save image to disk
+    diff_image = Image.fromarray(diff_im)
+    num_str = ""
+    for k in range(0, len(im_name)):
+        if (im_name[k].isdigit()):
+            num_str += im_name[k]
+    image_path = os.path.join(im_dir, "image_"+str(num_str)+"_difference.png")
+    diff_image.save(image_path)
 
 
 def save_images(webpage, visuals, image_path, aspect_ratio=1.0, width=256):
@@ -32,6 +52,10 @@ def save_images(webpage, visuals, image_path, aspect_ratio=1.0, width=256):
     webpage.add_header(name)
     ims, txts, links = [], [], []
 
+    real_im = np.zeros((256, 256, 3), dtype = np.uint8)
+    fake_im = np.zeros((256, 256, 3), dtype = np.uint8)
+    i = 1
+
     for label, im_data in visuals.items():
         im = util.tensor2im(im_data)
         image_name = '%s_%s.png' % (name, label)
@@ -40,6 +64,12 @@ def save_images(webpage, visuals, image_path, aspect_ratio=1.0, width=256):
         ims.append(image_name)
         txts.append(label)
         links.append(image_name)
+        if (i%3 == 2):
+            np.copyto(fake_im, im)
+        elif (i%3 == 0):
+            np.copyto(real_im, im)
+            findDiffImage(fake_im, real_im, image_dir, image_name)
+        i = i+1
     webpage.add_images(ims, txts, links, width=width)
 
 
