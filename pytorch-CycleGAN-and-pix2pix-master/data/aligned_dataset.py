@@ -22,8 +22,12 @@ class AlignedDataset(BaseDataset):
         BaseDataset.__init__(self, opt)
         # self.dir_AB = os.path.join(opt.dataroot, opt.phase)  # get the image directory
         #MANUALLY PUT IMAGE DIRECTORIES, CHANGE FOR LATER
-        self.dir_A = opt.dataroot + "/A"
-        self.dir_B = opt.dataroot + "/B"
+        if opt.phase == "test":
+            self.dir_A = opt.dataroot + "/A/test"
+            self.dir_B = opt.dataroot + "/B/test"
+        else:
+            self.dir_A = opt.dataroot + "/A"
+            self.dir_B = opt.dataroot + "/B"
         # self.AB_paths = sorted(make_dataset(self.dir_AB, opt.max_dataset_size))  # get image paths
         self.A_paths = sorted(mod_make_dataset(self.dir_A, opt.max_dataset_size))
         self.B_paths = sorted(make_dataset(self.dir_B, opt.max_dataset_size))
