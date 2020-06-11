@@ -29,8 +29,15 @@ def findDiffImage(fake_im, real_im, im_dir, im_name):
     for k in range(0, len(im_name)):
         if (im_name[k].isdigit()):
             num_str += im_name[k]
-    image_path = os.path.join(im_dir, "image_"+str(num_str)+"_difference.png")
-    diff_image.save(image_path)
+
+    #save difference as RGB image
+    image_path_RGB = os.path.join(im_dir, "image_"+str(num_str)+"_difference_RGB.png")
+    diff_image.save(image_path_RGB)
+
+    #save difference as grayscal image
+    diff_image_gray = Image.open(os.path.join(im_dir, "image_"+str(num_str)+"_difference_RGB.png")).convert('LA')
+    image_path_gray = os.path.join(im_dir, "image_"+str(num_str)+"_difference_grayscale.png")
+    diff_image_gray.save(image_path_gray)
 
 
 def save_images(webpage, visuals, image_path, aspect_ratio=1.0, width=256):
