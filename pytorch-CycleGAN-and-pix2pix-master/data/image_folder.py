@@ -44,7 +44,6 @@ def mod_make_dataset(dir, max_dataset_size):
         if max_dataset_size <50:
             i+=400
         cDir = dir+"/ipf_image_"+str(i)
-        print(cDir)
         if (os.path.isdir(cDir)):
             image_folders.append(cDir)
     return image_folders
