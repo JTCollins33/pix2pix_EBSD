@@ -41,10 +41,12 @@ def mod_make_dataset(dir, max_dataset_size):
 
     #only get folders housing 36 images, not the actual images
     for i in range(1, max_dataset_size+1):
+        if max_dataset_size <50:
+            i+=400
         cDir = dir+"/ipf_image_"+str(i)
+        print(cDir)
         if (os.path.isdir(cDir)):
             image_folders.append(cDir)
-
     return image_folders
 
 def default_loader(path):
