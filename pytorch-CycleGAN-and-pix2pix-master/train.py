@@ -26,7 +26,7 @@ from util.visualizer import Visualizer
 from random import seed
 from random import randint
 from datetime import datetime
-from . import util, html
+from ./util import util, html
 
 if __name__ == '__main__':
     opt = TrainOptions().parse()   # get training options
