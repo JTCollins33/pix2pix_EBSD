@@ -132,7 +132,7 @@ class Visualizer():
         print('Command: %s' % cmd)
         Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
 
-    def display_current_results(self, visuals, epoch, save_result):
+    def display_current_results(self, visuals, epoch, save_result, which_image, save_train_path):
         """Display current results on visdom; save current results to an HTML file.
 
         Parameters:
@@ -155,11 +155,16 @@ class Visualizer():
                 label_html_row = ''
                 images = []
                 idx = 0
+                cnt = 1
                 for label, image in visuals.items():
                     image_numpy = util.tensor2im(image)
+                    if (cnt == which_image):
+                        save_path_train_track = os.path.join(save_train_path, "image_"+str(which_image)+"_epoch_"+str(epoch)+".png")
+                        util.save_image(image_numpy, save_path_train_track)
                     label_html_row += '<td>%s</td>' % label
                     images.append(image_numpy.transpose([2, 0, 1]))
                     idx += 1
+                    cnt += 1
                     if idx % ncols == 0:
                         label_html += '<tr>%s</tr>' % label_html_row
                         label_html_row = ''
