@@ -26,6 +26,7 @@ from util.visualizer import Visualizer
 from random import seed
 from random import randint
 from datetime import datetime
+from . import util, html
 
 if __name__ == '__main__':
     opt = TrainOptions().parse()   # get training options
@@ -79,6 +80,11 @@ if __name__ == '__main__':
             print('saving the model at the end of epoch %d, iters %d' % (epoch, total_iters))
             model.save_networks('latest')
             model.save_networks(epoch)
+            
+        if epoch % 10 == 0:
+            label, image = model.get_current_visuals().item(which_image_track)
+            image_numpy = util.tensor2im(image)
+            util.save_image(image_numpy, "./results/training_results/image_"+str(which_image_track)+"_epoch_"+str(epoch)+".png")
 
         print('End of epoch %d / %d \t Time Taken: %d sec' % (epoch, opt.n_epochs + opt.n_epochs_decay, time.time() - epoch_start_time))
         model.update_learning_rate()                     # update learning rates at the end of every epoch.
