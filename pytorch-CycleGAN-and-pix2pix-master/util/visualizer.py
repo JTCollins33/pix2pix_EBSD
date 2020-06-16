@@ -242,7 +242,8 @@ class Visualizer():
 
     #save images to track progress during training
     def track_training(self, visuals, which_image, epoch):
-        label, image = visuals.item(which_image)
+        visual_list = list(visuals.items())
+        label, image = visual_list(which_image)
         image_numpy = util.tensor2im(image)
         util.save_image(image_numpy, "./results/training_results/image_"+str(which_image)+"_epoch_"+str(epoch)+".png")     
         
