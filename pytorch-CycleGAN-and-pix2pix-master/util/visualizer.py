@@ -158,8 +158,8 @@ class Visualizer():
                 cnt = 1
                 for label, image in visuals.items():
                     image_numpy = util.tensor2im(image)
-                    if (cnt == which_image):
-                        save_path_train_track = os.path.join(save_train_path, "image_"+str(which_image)+"_epoch_"+str(epoch)+".png")
+                    if (cnt == 1):
+                        save_path_train_track = os.path.join(save_train_path, "image_1_epoch_"+str(epoch)+".png")
                         util.save_image(image_numpy, save_path_train_track)
                     label_html_row += '<td>%s</td>' % label
                     images.append(image_numpy.transpose([2, 0, 1]))
