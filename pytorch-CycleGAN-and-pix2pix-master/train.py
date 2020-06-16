@@ -23,6 +23,9 @@ from options.train_options import TrainOptions
 from data import create_dataset
 from models import create_model
 from util.visualizer import Visualizer
+from random import seed
+from random import randint
+from datetime import datetime
 
 if __name__ == '__main__':
     opt = TrainOptions().parse()   # get training options
@@ -34,6 +37,9 @@ if __name__ == '__main__':
     model.setup(opt)               # regular setup: load and print networks; create schedulers
     visualizer = Visualizer(opt)   # create a visualizer that display/save images and plots
     total_iters = 0                # the total number of training iterations
+    
+    seed(datetime.now())
+    which_image_track = randint(0, opt.max_dataset_size)  #get image to track during training
 
     for epoch in range(opt.epoch_count, opt.n_epochs + opt.n_epochs_decay + 1):    # outer loop for different epochs; we save the model by <epoch_count>, <epoch_count>+<save_latest_freq>
         epoch_start_time = time.time()  # timer for entire epoch
@@ -54,7 +60,7 @@ if __name__ == '__main__':
             if total_iters % opt.display_freq == 0:   # display images on visdom and save images to a HTML file
                 save_result = total_iters % opt.update_html_freq == 0
                 model.compute_visuals()
-                visualizer.display_current_results(model.get_current_visuals(), epoch, save_result)  
+                visualizer.display_current_results(model.get_current_visuals(), epoch, save_result, which_image_track, epoch, "./results/training_results")  
 
             if total_iters % opt.print_freq == 0:    # print training losses and save logging information to the disk
                 losses = model.get_current_losses()
