@@ -46,8 +46,16 @@ if __name__ == '__main__':
         iter_data_time = time.time()    # timer for data loading per iteration
         epoch_iter = 0                  # the number of training iterations in current epoch, reset to 0 every epoch
         visualizer.reset()              # reset the visualizer: make sure it saves the results to HTML at least once every epoch
-
         for i, data in enumerate(dataset):  # inner loop within one epoch
+            A_path = data.get('A_paths')[0]
+            currentImageStr = ''
+            if A_path[-4]=='_':
+                currentImageStr = A_path[-3:]
+            elif A_path[-3] == '_':
+                currentImageStr = A_path[-2:]
+            elif A_path[-2] == '_':
+                currentImageStr = A_path[-1:]
+            currentImageN = int(currentImageStr)
             iter_start_time = time.time()  # timer for computation per iteration
             if total_iters % opt.print_freq == 0:
                 t_data = iter_start_time - iter_data_time
@@ -74,7 +82,7 @@ if __name__ == '__main__':
                 save_suffix = 'iter_%d' % total_iters if opt.save_by_iter else 'latest'
                 model.save_networks(save_suffix)
                 
-            if epoch % 10 == 0 and which_image_track == i:
+            if epoch % 10 == 0 and which_image_track == currentImageN:
                 visualizer.track_training(model.get_current_visuals(), which_image_track, epoch)
 
             iter_data_time = time.time()
