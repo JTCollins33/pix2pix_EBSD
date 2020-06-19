@@ -43,6 +43,7 @@ if __name__ == '__main__':
     which_image_track = 176
     
     RGB_tracking_file = open("./results/training_results/RGB_track.txt", "w")
+    Lab_tracking_file = open("./results/training_results/Lab_track.txt", "w")
 
     for epoch in range(opt.epoch_count, opt.n_epochs + opt.n_epochs_decay + 1):    # outer loop for different epochs; we save the model by <epoch_count>, <epoch_count>+<save_latest_freq>
         epoch_start_time = time.time()  # timer for entire epoch
@@ -86,7 +87,7 @@ if __name__ == '__main__':
                 model.save_networks(save_suffix)
                 
             if epoch % 10 == 0 and which_image_track == currentImageN:
-                visualizer.track_training(model.get_current_visuals(), which_image_track, epoch, RGB_tracking_file)
+                visualizer.track_training(model.get_current_visuals(), which_image_track, epoch, RGB_tracking_file, Lab_tracking_file)
 
             iter_data_time = time.time()
         if epoch % opt.save_epoch_freq == 0:              # cache our model every <save_epoch_freq> epochs
@@ -97,3 +98,4 @@ if __name__ == '__main__':
         print('End of epoch %d / %d \t Time Taken: %d sec' % (epoch, opt.n_epochs + opt.n_epochs_decay, time.time() - epoch_start_time))
         model.update_learning_rate()                     # update learning rates at the end of every epoch.
     RGB_tracking_file.close()
+    Lab_tracking_file.close()
