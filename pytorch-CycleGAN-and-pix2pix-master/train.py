@@ -42,7 +42,7 @@ if __name__ == '__main__':
     #which_image_track = randint(0, opt.max_dataset_size)  #get image to track during training
     which_image_track = 176
     
-    RGB_tracking_file = open("/results/training_results/RGB_track.txt", "w")
+    RGB_tracking_file = open("./results/training_results/RGB_track.txt", "w")
 
     for epoch in range(opt.epoch_count, opt.n_epochs + opt.n_epochs_decay + 1):    # outer loop for different epochs; we save the model by <epoch_count>, <epoch_count>+<save_latest_freq>
         epoch_start_time = time.time()  # timer for entire epoch
