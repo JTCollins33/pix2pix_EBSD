@@ -77,6 +77,7 @@ class AlignedDataset(BaseDataset):
 
         B2 = cv2.imread(B_path)
         imgB2 = np.asarray(B2)
+        imgB2 = np.true_divide(imgB2, 255.0)
         B = Image.fromarray(imgB2)
         # B = Image.fromarray(extendZerosRGB(imgB2))
         
@@ -84,6 +85,7 @@ class AlignedDataset(BaseDataset):
         first_A_Path = A_path+"/ipf_image_"+str(real_index)+"_1.tif"
         A2 = cv2.imread(first_A_Path, 0)
         imgA2 = np.asarray(A2)
+        imgA2 = np.true_divide(imgA2, 255.0)
         mergeA = Image.fromarray(imgA2)
         # mergeA = Image.fromarray(extendZeros(imgA2))
 
@@ -102,6 +104,7 @@ class AlignedDataset(BaseDataset):
             current_A_Image_Path = A_path + "/ipf_image_"+str(real_index)+"_"+str(i)+".tif"
             A2 = cv2.imread(current_A_Image_Path, 0)
             imgA2 = np.asarray(A2)
+            imgA2 = np.true_divide(imgA2, 255.0)
             A = Image.fromarray(imgA2)
             # A = Image.fromarray(extendZeros(imgA2))
             A = A_transform(A)
