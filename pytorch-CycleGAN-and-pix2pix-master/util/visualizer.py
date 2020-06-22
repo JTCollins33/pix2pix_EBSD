@@ -246,6 +246,7 @@ class Visualizer():
         for label, image in visuals.items():
             if (label == 'fake_B'):
                 image_numpy = util.tensor2im(image)
+                image_numpy *= 255
                 output_file_RGB.write("\nRGB values for Image "+str(which_image)+" after epoch "+str(epoch)+": "+str(image_numpy[127][5]))
                 util.save_image(image_numpy, "./results/training_results/image_"+str(which_image)+"_epoch_"+str(epoch)+".png") 
                 rgb = io.imread("./results/training_results/image_"+str(which_image)+"_epoch_"+str(epoch)+".png")
