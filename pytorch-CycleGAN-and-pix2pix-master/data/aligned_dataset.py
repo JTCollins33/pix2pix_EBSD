@@ -6,7 +6,7 @@ import cv2
 import numpy as np
 import torch
 
-nImages = 18
+nImages = 36
 
 class AlignedDataset(BaseDataset):
     """A dataset class for paired image dataset.
