@@ -1,5 +1,5 @@
 import os.path
-from data.base_dataset import BaseDataset, get_params, get_transform
+from data.base_dataset import BaseDataset, get_params, get_transform, mod_get_transform
 from data.image_folder import make_dataset, mod_make_dataset
 from PIL import Image
 import cv2
@@ -77,25 +77,30 @@ class AlignedDataset(BaseDataset):
 
         B2 = cv2.imread(B_path)
         imgB2 = np.asarray(B2)
-#         imgB2 = np.true_divide(imgB2, 255.0)
-        B = Image.fromarray(imgB2)
+        B = np.true_divide(imgB2, 255.0).astype('float32')
+        # B = Image.fromarray(imgB2)
         # B = Image.fromarray(extendZerosRGB(imgB2))
-        
         #do for first image to get base tensor to concatenate to
         first_A_Path = A_path+"/ipf_image_"+str(real_index)+"_1.tif"
         A2 = cv2.imread(first_A_Path, 0)
         imgA2 = np.asarray(A2)
-#         imgA2 = np.true_divide(imgA2, 255.0)
-        mergeA = Image.fromarray(imgA2)
+        mergeA = np.true_divide(imgA2, 255.0).astype('float32')
+        # mergeA = Image.fromarray(imgA2)
         # mergeA = Image.fromarray(extendZeros(imgA2))
 
         # apply the same transform to both A and B
-        transform_params_A = get_params(self.opt, mergeA.size)
-        transform_params_B = get_params(self.opt, B.size)
-        # A_transform = get_transform(self.opt, transform_params_A, grayscale=(self.input_nc == 1))
-        A_transform = get_transform(self.opt, transform_params_A, grayscale=True)   #all channels are grayscale
-        B_transform = get_transform(self.opt, transform_params_B, grayscale=(self.output_nc == 1))
+        # transform_params_A = get_params(self.opt, (mergeA.shape[0], mergeA.shape[1]))
+        # transform_params_B = get_params(self.opt, (B.shape[0], B.shape[1]))
+        # # A_transform = get_transform(self.opt, transform_params_A, grayscale=(self.input_nc == 1))
+        # A_transform = get_transform(self.opt, transform_params_A, grayscale=True)   #all channels are grayscale
+        # B_transform = get_transform(self.opt, transform_params_B, grayscale=(self.output_nc == 1))
 
+        # A_tensor = torch.from_numpy(mergeA)
+        # B_tensor = torch.from_numpy(B)
+        # mergeA = A_tensor.Normalize((0.5,), (0.5,))
+        # B = B_tensor.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
+        A_transform = mod_get_transform(self.opt, grayscale = (self.input_nc != 3))
+        B_transform = mod_get_transform(self.opt, grayscale = (self.output_nc == 1))
         B = B_transform(B)
         mergeA = A_transform(mergeA)
 
@@ -104,10 +109,12 @@ class AlignedDataset(BaseDataset):
             current_A_Image_Path = A_path + "/ipf_image_"+str(real_index)+"_"+str(i)+".tif"
             A2 = cv2.imread(current_A_Image_Path, 0)
             imgA2 = np.asarray(A2)
-#             imgA2 = np.true_divide(imgA2, 255.0)
-            A = Image.fromarray(imgA2)
+            A = np.true_divide(imgA2, 255.0).astype('float32')
+            # A_tensor = torch.from_numpy(A)
+            # A = Image.fromarray(imgA2)
             # A = Image.fromarray(extendZeros(imgA2))
             A = A_transform(A)
+            # A = A_tensor.Normalize((0.5,), (0.5,))
             mergeA = torch.cat((mergeA, A))
         return {'A': mergeA, 'B': B, 'A_paths': A_path, 'B_paths': B_path}
 
