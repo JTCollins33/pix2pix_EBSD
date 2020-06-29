@@ -58,7 +58,7 @@ if __name__ == '__main__':
     if opt.eval:
         model.eval()
     j = 0
-    stats_arr = np.zeros((opt.max_dataset_size, 1, 2), dtype = float32)
+    stats_arr = np.zeros((opt.max_dataset_size, 1, 2), dtype = np.float32)
     for i, data in enumerate(dataset):
         if i >= opt.num_test:  # only apply our model to opt.num_test images.
             break
