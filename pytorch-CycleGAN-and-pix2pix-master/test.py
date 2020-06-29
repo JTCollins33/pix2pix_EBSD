@@ -72,8 +72,15 @@ if __name__ == '__main__':
         j+=1
     webpage.save()  # save the HTML
     
+    sum_avg = 0
+    sum_std = 0
     #print stats out
     stats_file = open("./results/stats_tracking.txt", "w")
     for h in range(0, stats_arr.shape[0]):
         stats_file.write("\n(average, standard deviation) for Testing Difference Image "+str(h)+": ("+str(stats_arr[h][0][0])+", "+str(stats_arr[h][0][1])+")")
+        sum_avg += stats_arr[h][0][0]
+        sum_std += stats_arr[h][0][1]
+    total_avg = sum_avg/stats_arr.shape[0]
+    total_std = sum_std/stats_arr.shape[0]
+    stats_file.write("\nAverage (average, standard deviation) for all Images: ("+str(total_avg)+", "+str(total_std)+")")
     stats_file.close()
