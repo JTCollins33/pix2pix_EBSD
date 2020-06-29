@@ -77,9 +77,10 @@ def save_images(webpage, visuals, image_path, aspect_ratio=1.0, width=256):
             np.copyto(fake_im, im)
         elif (i%3 == 0):
             np.copyto(real_im, im)
-            findDiffImage(fake_im, real_im, image_dir, image_name)
+            avg, stdev = findDiffImage(fake_im, real_im, image_dir, image_name)
         i = i+1
     webpage.add_images(ims, txts, links, width=width)
+    return avg, stdev
 
 
 class Visualizer():
