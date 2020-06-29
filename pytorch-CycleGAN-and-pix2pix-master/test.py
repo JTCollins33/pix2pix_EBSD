@@ -32,6 +32,7 @@ from data import create_dataset
 from models import create_model
 from util.visualizer import save_images
 from util import html
+import numpy as np
 
 
 if __name__ == '__main__':
@@ -56,6 +57,8 @@ if __name__ == '__main__':
     # For [CycleGAN]: It should not affect CycleGAN as CycleGAN uses instancenorm without dropout.
     if opt.eval:
         model.eval()
+    j = 0
+    stats_arr = np.zeros((opt.max_dataset_size, 1, 2), dtype = float32)
     for i, data in enumerate(dataset):
         if i >= opt.num_test:  # only apply our model to opt.num_test images.
             break
@@ -65,5 +68,12 @@ if __name__ == '__main__':
         img_path = model.get_image_paths()     # get image paths
         if i % 5 == 0:  # save images to an HTML file
             print('processing (%04d)-th image... %s' % (i, img_path))
-        save_images(webpage, visuals, img_path, aspect_ratio=opt.aspect_ratio, width=opt.display_winsize)
+        stats_arr[j][0][0], stats_arr[j][0][1] = save_images(webpage, visuals, img_path, aspect_ratio=opt.aspect_ratio, width=opt.display_winsize)
+        j+=1
     webpage.save()  # save the HTML
+    
+    #print stats out
+    stats_file = open("./results/stats_tracking.txt", "w")
+    for h in range(0, stats_arr.shape[0]):
+        stats_file.write("\n(average, standard deviation) for Testing Difference Image "+str(h)+": ("+str(stats_arr[h][0][0])+", "+str(stats_arr[h][0][1])+")")
+    stats_file.close()
