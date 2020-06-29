@@ -24,6 +24,8 @@ def findDiffImage(fake_im, real_im, im_dir, im_name):
             for h in range(0, fake_im.shape[2]):
                 diff_im[i][j][h] = abs(fake_im[i][j][h]-real_im[i][j][h])
 
+    avg = np.mean(diff_im)
+    stdev = np.std(diff_im)
     #save image to disk
     diff_image = Image.fromarray(diff_im)
     num_str = ""
@@ -39,6 +41,8 @@ def findDiffImage(fake_im, real_im, im_dir, im_name):
     diff_image_gray = Image.open(os.path.join(im_dir, "image_"+str(num_str)+"_difference_RGB.png")).convert('LA')
     image_path_gray = os.path.join(im_dir, "image_"+str(num_str)+"_difference_grayscale.png")
     diff_image_gray.save(image_path_gray)
+    
+    return avg, stdev
 
 
 def save_images(webpage, visuals, image_path, aspect_ratio=1.0, width=256):
