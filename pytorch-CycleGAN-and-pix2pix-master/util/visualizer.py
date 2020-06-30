@@ -265,7 +265,7 @@ class Visualizer():
                 output_file_Lab.write("\nLab values for Image "+str(which_image)+" after epoch "+str(epoch)+": "+str(lab_arr[127][5]))
         
     # losses: same format as |losses| of plot_current_losses
-    def print_current_losses(self, epoch, iters, losses, t_comp, t_data):
+    def print_current_losses(self, epoch, iters, losses, t_comp, t_data, loss_file):
         """print current losses on console; also save the losses to the disk
 
         Parameters:
@@ -274,11 +274,16 @@ class Visualizer():
             losses (OrderedDict) -- training losses stored in the format of (name, float) pairs
             t_comp (float) -- computational time per data point (normalized by batch_size)
             t_data (float) -- data loading time per data point (normalized by batch_size)
+            loss_file (output stream) -- txt file which will contain all loss values from training
         """
         message = '(epoch: %d, iters: %d, time: %.3f, data: %.3f) ' % (epoch, iters, t_comp, t_data)
+        loss_file.write("\nLoss after epoch "+str(epoch)+":")
         for k, v in losses.items():
             message += '%s: %.3f ' % (k, v)
+            loss_file.write("\n"+str(k)+": "+str(v))
 
+        loss_file.write("\n")
+            
         print(message)  # print the message
         with open(self.log_name, "a") as log_file:
             log_file.write('%s\n' % message)  # save the message
