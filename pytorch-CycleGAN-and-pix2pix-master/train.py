@@ -44,6 +44,7 @@ if __name__ == '__main__':
     
     RGB_tracking_file = open("./results/training_results/RGB_track.txt", "w")
     Lab_tracking_file = open("./results/training_results/Lab_track.txt", "w")
+    loss_file = open("./results/training_results/loss_track.txt", "w")
 
     for epoch in range(opt.epoch_count, opt.n_epochs + opt.n_epochs_decay + 1):    # outer loop for different epochs; we save the model by <epoch_count>, <epoch_count>+<save_latest_freq>
         epoch_start_time = time.time()  # timer for entire epoch
@@ -77,7 +78,7 @@ if __name__ == '__main__':
             if total_iters % opt.print_freq == 0:    # print training losses and save logging information to the disk
                 losses = model.get_current_losses()
                 t_comp = (time.time() - iter_start_time) / opt.batch_size
-                visualizer.print_current_losses(epoch, epoch_iter, losses, t_comp, t_data)
+                visualizer.print_current_losses(epoch, epoch_iter, losses, t_comp, t_data, loss_file)
                 if opt.display_id > 0:
                     visualizer.plot_current_losses(epoch, float(epoch_iter) / dataset_size, losses)
 
@@ -99,3 +100,4 @@ if __name__ == '__main__':
         model.update_learning_rate()                     # update learning rates at the end of every epoch.
     RGB_tracking_file.close()
     Lab_tracking_file.close()
+    loss_file.close()
