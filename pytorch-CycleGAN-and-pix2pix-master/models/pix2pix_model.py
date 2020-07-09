@@ -1,6 +1,12 @@
 import torch
 from .base_model import BaseModel
 from . import networks
+import numpy as np
+import cv2
+import torchvision.transforms as transforms
+import os
+import torch
+from skimage.metrics import structural_similarity
 
 
 class Pix2PixModel(BaseModel):
@@ -101,6 +107,16 @@ class Pix2PixModel(BaseModel):
         self.loss_G_GAN = self.criterionGAN(pred_fake, True)
         # Second, G(A) = B
         self.loss_G_L1 = self.criterionL1(self.fake_B, self.real_B) * self.opt.lambda_L1
+
+        #get images to use for SSIM calculation
+        img_fake = convertTensorToImage(self.fake_B)
+        img_real = convertTensorToImage(self.real_B)
+
+        SSIM_score, diff = structural_similarity(img_fake, img_real, full = True, multichannel = True)
+
+        #add SSIM loss to L1 loss
+        self.loss_G_L1 += (1-SSIM_score) * self.opt.lambda_L1
+
         # combine loss and calculate gradients
         self.loss_G = self.loss_G_GAN + self.loss_G_L1
         self.loss_G.backward()
@@ -117,3 +133,61 @@ class Pix2PixModel(BaseModel):
         self.optimizer_G.zero_grad()        # set G's gradients to zero
         self.backward_G()                   # calculate graidents for G
         self.optimizer_G.step()             # udpate G's weights
+
+    def track_test_img(self, epoch):
+        input_folder = "./datasets/EBSD/hexagonal/A/test/ipf_image_101/"
+        arr_np = np.zeros((256,256,36), dtype = np.uint8)
+        for i in range(1, 37):
+            img_path = input_folder+"ipf_image_101_"+str(i)+".tif"
+            img = cv2.imread(img_path, 0)
+            img_arr = np.asarray(img)
+            arr_np[:,:,i-1] = img_arr
+        test_transform = get_test_transform()
+        arr_tens = test_transform(arr_np)
+        arr_tens_v2 = torch.zeros([1,36,256,256], dtype = torch.float32)
+        arr_tens_v2[0,:,:,:] = arr_tens
+        arr_tens_v2 -= 0.5
+        arr_tens_v2 *= 2
+
+        fake_tens = self.netG(arr_tens_v2)   #G(A)
+        tens_prep = torch.zeros([36, 256, 256], dtype = torch.float32)
+        tens_prep = fake_tens[0,:,:,:]
+
+        img_transform = get_img_transform()
+        fake_img = img_transform(tens_prep.cpu())
+
+        directory = "./results/test_tracking/"
+
+        if (not os.path.isdir(directory)):
+            os.mkdir(directory)
+
+        fake_img.save(directory+"test_image_101_epoch_"+str(epoch)+".tif")
+
+def get_test_transform():
+    transforms_list = []
+    transforms_list += [transforms.ToTensor()]
+    return transforms.Compose(transforms_list)
+
+def get_img_transform():
+    transforms_list = []
+    transforms_list += [transforms.ToPILImage()]
+    return transforms.Compose(transforms_list)
+
+def convertTensorToImage(tens):
+    #convert tensor to numpy array
+    arr_np = np.zeros((256, 256, 3), dtype = np.float32)
+
+    arr_np[:,:,0] = tens[0,0,:,:].cpu().detach().numpy()
+    arr_np[:,:,1] = tens[0,1,:,:].cpu().detach().numpy()
+    arr_np[:,:,2] = tens[0,2,:,:].cpu().detach().numpy()
+
+    #format array properly
+    arr_np += 1
+    arr_np *= 127.5
+    arr_np = arr_np.astype(np.uint8)
+
+    #convert arrays to imgs for ssim calculation
+    cv2.imwrite("./temp.tif", arr_np)
+    img = cv2.imread("./temp.tif")
+
+    return img
