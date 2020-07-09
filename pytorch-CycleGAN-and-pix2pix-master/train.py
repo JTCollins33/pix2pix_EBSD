@@ -89,6 +89,7 @@ if __name__ == '__main__':
                 
             if epoch % 10 == 0 and which_image_track == currentImageN:
                 visualizer.track_training(model.get_current_visuals(), which_image_track, epoch, RGB_tracking_file, Lab_tracking_file)
+                model.track_test_img(epoch)
 
             iter_data_time = time.time()
         if epoch % opt.save_epoch_freq == 0:              # cache our model every <save_epoch_freq> epochs
