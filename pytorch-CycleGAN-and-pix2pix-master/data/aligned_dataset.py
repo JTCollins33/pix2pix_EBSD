@@ -46,19 +46,6 @@ class AlignedDataset(BaseDataset):
             A_paths (str) - - image paths
             B_paths (str) - - image paths (same as A_paths)
         """
-        # # read a image given a random integer index
-        # AB_path = self.AB_paths[index]
-        # # AB = Image.open(AB_path).convert('RGB')
-        # # AB = Image.open(AB_path)
-        # AB2 = cv2.imread(AB_path)
-        # # split AB image into A and B
-        # # w, h = AB.size
-        # w, h, channels = AB2.shape
-        # imgArr = np.asarray(AB2)
-        # AB = Image.fromarray(imgArr) 
-        # w2 = int(w / 2)
-        # A = AB.crop((0, 0, w2, h))
-        # B = AB.crop((w2, 0, w, h))
 
         #read image given a random integer index
         A_path = self.A_paths[index]
@@ -85,20 +72,7 @@ class AlignedDataset(BaseDataset):
         A2 = cv2.imread(first_A_Path, 0)
         imgA2 = np.asarray(A2)
         mergeA = np.true_divide(imgA2, 255.0).astype('float32')
-        # mergeA = Image.fromarray(imgA2)
-        # mergeA = Image.fromarray(extendZeros(imgA2))
-
-        # apply the same transform to both A and B
-        # transform_params_A = get_params(self.opt, (mergeA.shape[0], mergeA.shape[1]))
-        # transform_params_B = get_params(self.opt, (B.shape[0], B.shape[1]))
-        # # A_transform = get_transform(self.opt, transform_params_A, grayscale=(self.input_nc == 1))
-        # A_transform = get_transform(self.opt, transform_params_A, grayscale=True)   #all channels are grayscale
-        # B_transform = get_transform(self.opt, transform_params_B, grayscale=(self.output_nc == 1))
-
-        # A_tensor = torch.from_numpy(mergeA)
-        # B_tensor = torch.from_numpy(B)
-        # mergeA = A_tensor.Normalize((0.5,), (0.5,))
-        # B = B_tensor.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
+        
         A_transform = mod_get_transform(self.opt, grayscale = (self.input_nc != 3))
         B_transform = mod_get_transform(self.opt, grayscale = (self.output_nc == 1))
         B = B_transform(B)
@@ -110,11 +84,7 @@ class AlignedDataset(BaseDataset):
             A2 = cv2.imread(current_A_Image_Path, 0)
             imgA2 = np.asarray(A2)
             A = np.true_divide(imgA2, 255.0).astype('float32')
-            # A_tensor = torch.from_numpy(A)
-            # A = Image.fromarray(imgA2)
-            # A = Image.fromarray(extendZeros(imgA2))
             A = A_transform(A)
-            # A = A_tensor.Normalize((0.5,), (0.5,))
             mergeA = torch.cat((mergeA, A))
         return {'A': mergeA, 'B': B, 'A_paths': A_path, 'B_paths': B_path}
 
